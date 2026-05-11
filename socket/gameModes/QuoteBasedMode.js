@@ -16,7 +16,7 @@ const handleQuoteBasedMode = async (io, socket, data) => {
   try {
     const diff =
       gameMode === "Echo Mode"
-        ? "lower" 
+        ? "lower"
         : difficulty === "Easy"
         ? "lower"
         : difficulty === "Medium"
@@ -26,15 +26,18 @@ const handleQuoteBasedMode = async (io, socket, data) => {
     const quote = await fetchQuote(diff);
 
     clearTimeout(timeout);
+
     updateRoom(roomId, { gameState: "started", quote });
 
+    // ✅ FIXED PAYLOAD (IMPORTANT)
     io.to(roomId).emit("gameStarted", {
       roomId,
       startTime: Date.now() + 5000,
-       serverTime: Date.now(),
+      serverTime: Date.now(),
       gameMode,
-      payload: { quote },
+      text: quote, // ✅ THIS LINE FIXES EVERYTHING
     });
+
   } catch (err) {
     clearTimeout(timeout);
     io.to(roomId).emit("serverStatus", "error");
