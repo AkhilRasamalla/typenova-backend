@@ -1,23 +1,28 @@
+
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import socketHandler from "./socket/socket.js";
+import { fetchQuote } from "./socket/utils/fetchQuote.js";
 
 const app = express();
 const server = http.createServer(app);
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL,
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -25,11 +30,29 @@ const io = new Server(server, {
 
 socketHandler(io);
 
-// Health check route
+// Health route
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok" });
+  res.status(200).json({
+    status: "ok",
+  });
+});
+
+// Quote API route
+app.get("/api/get", async (req, res) => {
+  try {
+    const quote = await fetchQuote();
+
+    res.json({
+      text: quote,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to fetch quote",
+    });
+  }
 });
 
 server.listen(PORT, () => {
-  console.log(`Server running on port http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
+

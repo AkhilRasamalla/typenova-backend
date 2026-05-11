@@ -1,15 +1,23 @@
 import axios from "axios";
-import dotenv from "dotenv";
 
-dotenv.config();
+export const fetchQuote = async () => {
+try {
 
-export const fetchQuote = async (difficulty) => {
-  const endpoint = `${process.env.RANDOM_API_URL}/api/get/random/${difficulty}`;
-  try {
-    const response = await axios.get(endpoint);
-    return response.data.text;
 
-  } catch (error) {
-    console.error("Failed to fetch quote :)");
-  }
+const response = await axios.get(
+  "https://dummyjson.com/quotes/random"
+);
+
+return response.data.quote;
+
+
+} catch (error) {
+
+
+console.error("Quote fetch failed");
+
+return "Practice typing every day to improve your speed";
+
+
+}
 };
