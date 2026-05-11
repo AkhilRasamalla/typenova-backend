@@ -34,6 +34,13 @@ const io = new Server(server, {
 
 socketHandler(io);
 
+// Root route
+app.get("/", (req, res) => {
+  res.json({
+    status: "Backend running successfully",
+  });
+});
+
 // Health route
 app.get("/health", (req, res) => {
   res.status(200).json({
